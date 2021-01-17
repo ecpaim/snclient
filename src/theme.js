@@ -3,14 +3,16 @@ const t = {
     //shadows: ["none"],
     palette: {
       primary: {
-        light: '#ced3db',
-        main: '#ffffff',
-        dark: '#c9b0b0',
-        contrastText: '#000000'
+        light: '#ced3db', // gray
+        main: '#ffffff', // white
+        dark: '#bebebe', // gray
+        contrastText: '#000000' // black
       },
       secondary: {
-        light: '#e40000',
-        main: '#992e2e',
+        //light: '#e40000', // light red
+        light:'#6202f3', // light purple
+        //main: '#992e2e', // main red
+        main: '#512f83', // main purple
         dark: '#000000',
         contrastText: '#ffffff'
       },
