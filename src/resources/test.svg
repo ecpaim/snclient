@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient gradientUnits="userSpaceOnUse" cx="300" cy="150" r="150" id="gradient-0">
+        <animate 
+          attributeName="cx"
+          attributeType="XML"
+          values="300 ; 297.118 ; 288.582 ; 274.720 ; 256.066 ; 233.336 ; 207.403 ; 179.264 ; 150.000 ; 120.736 ; 92.597 ; 66.664 ; 43.934 ; 25.280 ; 11.418 ; 2.882 ; 0.000 ; 2.882 ; 11.418 ; 25.280 ; 43.934 ; 66.664 ; 92.597 ; 120.736 ; 150.000 ; 179.264 ; 207.403 ; 233.336 ; 256.066 ; 274.720 ; 288.582 ; 297.118 ; 300"
+          dur="10s"
+          repeatCount="indefinite"/>
+        <animate 
+          attributeName="cy"
+          attributeType="XML"
+          values="150 ; 179.264 ; 207.403 ; 233.336 ; 256.066 ; 274.720 ; 288.582 ; 297.118 ; 300.000 ; 297.118 ; 288.582 ; 274.720 ; 256.066 ; 233.336 ; 207.403 ; 179.264 ; 150.000 ; 120.736 ; 92.597 ; 66.664 ; 43.934 ; 25.280 ; 11.418 ; 2.882 ; 0.000 ; 2.882 ; 11.418 ; 25.280 ; 43.934 ; 66.664 ; 92.597 ; 120.736 ; 150"
+          dur="10s"
+          repeatCount="indefinite"/>
+      <stop offset="0%" style="stop-color: rgb(230, 230, 230);"/>
+      <stop offset="75%" style="stop-color: rgb(153, 46, 46);"/>
+      <stop offset="100%" style="stop-color: rgb(59, 34, 97);"/>
+    </radialGradient>
+    
+  </defs>
+  <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 276.818 149.586"/>
+  <rect width="300" height="300" style="fill: url(#gradient-0);"/>
+  
+</svg>

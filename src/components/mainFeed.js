@@ -15,7 +15,7 @@ const styles = (theme) => ({
     ...theme.general,
     pst:{
         backgroundColor:'#ffffff',
-        margin:10,
+        margin:6,
         [theme.breakpoints.up('md')]: {
             padding:10,
             border: '1px solid rgba(0,0,0,0.1)',
@@ -33,18 +33,43 @@ const styles = (theme) => ({
     },
     pstButtons:{
         display:'flex',
+        /*
         width:'95%',
         paddingLeft:'2.5%',
         paddingRight:'2.5%'
+        */
+       paddingLeft: 3,
+       paddingRight: 3
     },
     pstIcons:{
         fontSize: 28,
-        padding:3
+        padding:3,
+        [theme.breakpoints.up('md')]: {
+            fontSize: 20,
+        }
+    },
+    favouriteIcon:{
+        fontSize: 34,
+        [theme.breakpoints.up('md')]: {
+            fontSize: 24,
+        }
     },
     pstUser:{
         fontSize:36,
         paddingBottom:3,
         paddingTop:3
+    },
+    usernameText:{
+        fontSize:14,
+        padding:2,
+        paddingTop:10
+    },
+    feedText:{
+        fontSize:13,
+        padding:2,
+        paddingTop:11,
+        paddingRight:10,
+        color:'rgba(0,0,0,0.4)'
     }
 });
 
@@ -57,18 +82,24 @@ const MainFeed = ({classes}) => {
         <div>
             {
                 posts.map( pst => (
-                    <div className={classes.pst}>
+                    <div className={classes.pst} key={pst}>
                         <div className={classes.pstButtons}>
-                            <IconButton aria-label="comment on post" color="inherit" size='small' >
+                            <IconButton aria-label="user photo" color="inherit" size='small' >
                                     <AccountCircle className={classes.pstUser} />
                             </IconButton>
+                            <div className={classes.usernameText}> <b> username </b> </div>
+
+                            <div className={classes.grow} />
+
+                            <div className={classes.feedText}>  feed: geral  </div>
+                               
                         </div>
 
                         <img src={blankPst} className={classes.pstImg} alt='post'/>
 
                         <div className={classes.pstButtons}>
                             <IconButton aria-label="like post" color="inherit" size='small'>
-                                <FavoriteBorderIcon style={{fontSize:30}}/> 
+                                <FavoriteBorderIcon className={classes.favouriteIcon}/> 
                             </IconButton>
                             <IconButton aria-label="comment on post" color="inherit" size='small' >
                                 <ModeCommentOutlinedIcon className={classes.pstIcons}/>
