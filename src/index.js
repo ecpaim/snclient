@@ -8,12 +8,26 @@ import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import themeFile from './theme';
 
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+
+import {Provider} from 'react-redux';
+import { configureStore } from "@reduxjs/toolkit";
+import rootReducer from './redux/root';
+
 const theme = createMuiTheme(themeFile);
+
+const store = configureStore({
+  reducer: rootReducer
+});
 
 ReactDOM.render(
   <React.StrictMode>
     <MuiThemeProvider theme = {theme}>
-      <App />
+      <Provider store={store}>
+        <Router>
+          <App />
+        </Router>
+      </Provider>
     </MuiThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')

@@ -12,6 +12,8 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import SearchIcon from '@material-ui/icons/Search';
 
+import {connect} from 'react-redux';
+
 const styles = (theme) => ({
     ...theme.general,
     pst:{
@@ -70,7 +72,7 @@ const CssTextField = withStyles({
     },
   })(TextField);
 
-const SideBar = ({classes}) => {
+const SideBar = ({username,email,classes}) => {
     return(
         <div style={{position:'fixed'}}>
         <div className={classes.pst}>
@@ -99,7 +101,7 @@ const SideBar = ({classes}) => {
                 <IconButton aria-label="user photo" color="inherit" size='small' >
                     <AccountCircle style={{fontSize:34}}/>
                 </IconButton>
-                <div className={classes.usernameText}> <b> username </b> </div>
+                <div className={classes.usernameText}> <b> {username} </b> </div>
 
             </div>
 
@@ -163,6 +165,11 @@ const SideBar = ({classes}) => {
 
 SideBar.propTypes = {
     classes: PropTypes.object.isRequired,
-}
+};
 
-export default withStyles(styles)(SideBar);
+const mapStateToProps = state => ({
+    username: state.user.username,
+    email: state.user.email
+});
+
+export default connect(mapStateToProps)(withStyles(styles)(SideBar));
