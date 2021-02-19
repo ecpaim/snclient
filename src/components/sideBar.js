@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
-import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -13,6 +12,8 @@ import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import SearchIcon from '@material-ui/icons/Search';
 
 import {connect} from 'react-redux';
+
+import CssTextField from '../util/cssTextField';
 
 const styles = (theme) => ({
     ...theme.general,
@@ -49,28 +50,6 @@ const styles = (theme) => ({
         fontSize: 14
     }
 });
-
-const CssTextField = withStyles({
-    root: {
-      '& label.Mui-focused': {
-        color: 'rgba(0,0,0,0.13)',
-      },
-      '& .MuiInput-underline:after': {
-        borderBottomColor: 'rgba(0,0,0,0.13)',
-      },
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: 'rgba(0,0,0,0.13)',
-        },
-        '&:hover fieldset': {
-          borderColor: 'rgba(0,0,0,0.13)',
-        },
-        '&.Mui-focused fieldset': {
-          borderColor: 'rgba(0,0,0,0.13)',
-        },
-      },
-    },
-  })(TextField);
 
 const SideBar = ({username,email,classes}) => {
     return(

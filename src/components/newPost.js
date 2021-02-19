@@ -4,9 +4,10 @@ import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Button from '@material-ui/core/Button';
 import ImageIcon from '@material-ui/icons/Image';
-import TextField from '@material-ui/core/TextField';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import LockIcon from '@material-ui/icons/Lock';
+
+import CssTextField from '../util/cssTextField';
 
 import axios from 'axios';
 
@@ -58,28 +59,6 @@ const styles = (theme) => ({
     }
 
 });
-
-const CssTextField = withStyles({
-    root: {
-      '& label.Mui-focused': {
-        color: 'rgba(0,0,0,0.13)',
-      },
-      '& .MuiInput-underline:after': {
-        borderBottomColor: 'rgba(0,0,0,0.13)',
-      },
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: 'rgba(0,0,0,0.13)',
-        },
-        '&:hover fieldset': {
-          borderColor: 'rgba(0,0,0,0.13)',
-        },
-        '&.Mui-focused fieldset': {
-          borderColor: 'rgba(0,0,0,0.13)',
-        },
-      },
-    },
-  })(TextField);
 
 
 function NewPost({username,email,classes}) {

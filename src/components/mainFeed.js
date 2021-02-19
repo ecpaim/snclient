@@ -11,6 +11,8 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 
 import blankPst from '../resources/blank_4_5.svg';
 
+import {connect} from 'react-redux';
+
 const styles = (theme) => ({
     ...theme.general,
     pst:{
@@ -77,7 +79,7 @@ const posts = [1,2,3,4,5];
 
 
 
-const MainFeed = ({classes}) => {
+const MainFeed = ({username, authenticated, classes}) => {
     return(
         <div>
             {
@@ -87,7 +89,7 @@ const MainFeed = ({classes}) => {
                             <IconButton aria-label="user photo" color="inherit" size='small' >
                                     <AccountCircle className={classes.pstUser} />
                             </IconButton>
-                            <div className={classes.usernameText}> <b> username </b> </div>
+                            <div className={classes.usernameText}> <b> {username} </b> </div>
 
                             <div className={classes.grow} />
 
@@ -121,4 +123,9 @@ MainFeed.propTypes = {
     classes: PropTypes.object.isRequired,
 }
 
-export default withStyles(styles)(MainFeed);
+const mapStateToProps = state => ({
+    username: state.user.username,
+    authenticated: state.user.authenticated,
+});
+
+export default connect(mapStateToProps)(withStyles(styles)(MainFeed));
