@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import jwtDecode from 'jwt-decode';
+import axios from 'axios';
 
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
@@ -13,12 +15,32 @@ import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from './redux/root';
+import {setAuthentication} from  './redux/user/userSlice';
 
 const theme = createMuiTheme(themeFile);
+
+axios.defaults.baseURL = "http://localhost:3001";
 
 const store = configureStore({
   reducer: rootReducer
 });
+
+const token = localStorage.AuthToken;
+if(token){
+  console.log('ololo');
+  const decodedToken = jwtDecode(token);
+  console.log(decodedToken);
+
+  //if token expired
+  if(decodedToken.exp * 1000 < Date.now()) {
+    
+    window.location.href = '/login';
+  } else {
+    
+    axios.defaults.headers.common['Authorization'] = token;
+    store.dispatch(setAuthentication({user:decodedToken.sub, authBool: true}));
+  }
+}
 
 ReactDOM.render(
   <React.StrictMode>

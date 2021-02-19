@@ -1,11 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-//let nextTodoId = 0
+/*
+  createSlice automatically generates the action type strings 
+  and action creator functions based on the names of the reducers we listed
+*/
 const userSlice = createSlice({
   name: 'userInfo',
   initialState: {
       username: 'username',
       email: 'example@email.com',
+      authenticated: false
   },
   reducers: {
     changeEmail: {
@@ -13,33 +17,17 @@ const userSlice = createSlice({
         const { newEmail } = action.payload
         state.email = newEmail
       },
-      prepare(newEmail) { // I think reducer/prepare are useless in this case
+      prepare(newEmail) { // reducer/prepare are useless in this example
         return { payload: { newEmail } }
       }
     },
-    /*
-    addRegistrationBlock: {
-      reducer(state,action) {
-        const {newBlock} = action.payload;
-        state.registrationBlocks.push(newBlock);
-      },
-      prepare(newBlock){
-        return { payload: {newBlock} };
-      }
-
-    },
-    removeRegistrationBlock: {
-      reducer(state,action) {
-        const {index} = action.payload;
-        state.registrationBlocks.splice(index,1);
-      },
-      prepare(index){
-        return { payload: {index} };
-      }
+    setAuthentication(state,action){
+      const  {user, authBool}  = action.payload;
+      state.authenticated = authBool; //thanks to immer library we can mutate the immutable redux state
+      state.username = user;
     }
-    */
 
   }
 })
-export const { changeEmail } = userSlice.actions;
+export const { changeEmail, setAuthentication } = userSlice.actions;
 export default userSlice.reducer;

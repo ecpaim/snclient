@@ -26,6 +26,12 @@ const t = {
         grow: { //pushes itens to the right
           flexGrow: 1,
         },
+        background:{
+          backgroundColor:'#f5f5f5'
+        },
+        textSize:{
+          fontSize:14,
+        },
     }
 };
 export default t;
