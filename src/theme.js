@@ -17,6 +17,9 @@ const t = {
         contrastText: '#ffffff'
       },
     },
+    typography:{
+      fontSize:14
+    },
     general: {
         visibleSeparator: {
             width: '100%',
@@ -27,11 +30,12 @@ const t = {
           flexGrow: 1,
         },
         background:{
-          backgroundColor:'#f5f5f5'
+          backgroundColor:'#f5f5f5',
+          minHeight:'calc(100vh - 52px)'
         },
         textSize:{
           fontSize:14,
-        },
+        }
     }
 };
 export default t;

@@ -15,7 +15,7 @@ import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from './redux/root';
-import {setAuthentication} from  './redux/user/userSlice';
+import {setAuthentication, setUserInfo} from  './redux/user/userSlice';
 
 const theme = createMuiTheme(themeFile);
 
@@ -36,9 +36,16 @@ if(token){
     
     window.location.href = '/login';
   } else {
-    
+    //console.log( decodedToken.exp * 1000 - Date.now() + " seconds remain");
     axios.defaults.headers.common['Authorization'] = token;
     store.dispatch(setAuthentication({user:decodedToken.sub, authBool: true}));
+
+    axios.get('/api/user')
+      .then((res) => {
+          console.log(res.data);
+          store.dispatch(setUserInfo({username: res.data.username, email: res.data.email, profilePic: res.data.profilePic}));
+        })
+    .catch(err => console.log(err));
   }
 }
 

@@ -27,9 +27,6 @@ const styles = (theme) => ({
             border: '1px solid rgba(0,0,0,0.1)',
         }
     },
-    page:{ // vh - appbar height
-        minHeight:'calc(100vh - 52px)'
-    },
     title:{
         display:'flex',
         alignItems:'center',
@@ -131,7 +128,7 @@ function Signup({username, email, authenticated, setAuthentication, classes}){
     };
 
     return(
-        <div className={classes.page}>
+     
         <Grid container className={classes.background} >
         <Grid item md={4} xs={false} />
         <Grid item md={3} xs={12} className={classes.page}>
@@ -227,7 +224,7 @@ function Signup({username, email, authenticated, setAuthentication, classes}){
             </div>
         </Grid>
         </Grid>
-        </div>
+       
     );
 };
 

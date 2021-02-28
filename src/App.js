@@ -17,6 +17,9 @@ import {Switch as RouterSwitch, Route} from "react-router-dom";
 
 const styles = (theme) => ({ 
   ...theme.general,
+  typography:{
+    fontSize:10
+  },
   appbarOffset:{
     minHeight:52,
     maxHeight:52
@@ -35,7 +38,7 @@ const App =  (props) => {
       <RouterSwitch>
         <Route exact path='/' component={Home} />
         <AuthRoute exact path='/login' component={Login} />
-        <AuthRoute exact path='/signup' component={Signup} />
+        <Route exact path='/signup' component={Signup} />
       </RouterSwitch>
     </div>
   );

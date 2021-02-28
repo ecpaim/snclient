@@ -9,6 +9,7 @@ const userSlice = createSlice({
   initialState: {
       username: 'username',
       email: 'example@email.com',
+      profilePic:'',
       authenticated: false
   },
   reducers: {
@@ -24,10 +25,15 @@ const userSlice = createSlice({
     setAuthentication(state,action){
       const  {user, authBool}  = action.payload;
       state.authenticated = authBool; //thanks to immer library we can mutate the immutable redux state
-      state.username = user;
+      state.username = user; 
+    },
+    setUserInfo(state,action) {
+      const {username, email, profilePic} = action.payload;
+      state.username = username;
+      state.email = email;
+      state.profilePic = profilePic;
     }
-
   }
 })
-export const { changeEmail, setAuthentication } = userSlice.actions;
+export const { changeEmail, setAuthentication, setUserInfo } = userSlice.actions;
 export default userSlice.reducer;

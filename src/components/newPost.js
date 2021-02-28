@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Button from '@material-ui/core/Button';
 import ImageIcon from '@material-ui/icons/Image';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import LockIcon from '@material-ui/icons/Lock';
 
 import CssTextField from '../util/cssTextField';
@@ -12,8 +11,12 @@ import CssTextField from '../util/cssTextField';
 import axios from 'axios';
 
 import loadingCat from '../resources/loadingIcon.svg';
+import blankPst from '../resources/blank_4_5.svg';
+import fallbackImg from '../resources/blank_4_5.png';
 
 import {connect} from 'react-redux';
+
+import { useHistory } from "react-router-dom";
 
 const styles = (theme) => ({
     ...theme.general,
@@ -28,6 +31,12 @@ const styles = (theme) => ({
     addPost:{
         display:'flex',
         
+    },
+    circleImg:{
+      height:40,
+      width:40,
+      objectFit: 'cover',
+      borderRadius: '50%'
     },
     textField:{
         paddingLeft:0,
@@ -61,9 +70,11 @@ const styles = (theme) => ({
 });
 
 
-function NewPost({username,email,classes}) {
+function NewPost({username,email,profilePic,classes}) {
 
     const [newPost, setNewPost] = React.useState({description:"", imageUrl:"",formData:"",feed:'geral'});
+
+    const history = useHistory();
 
     const handleImageChange = (event) => {
 
@@ -111,8 +122,12 @@ function NewPost({username,email,classes}) {
           const timestamp = currentDate.getTime();
           console.log(timestamp);
           fd.append('timestamp', timestamp);
+
+          const feed = 'MAIN';
+          fd.append('feed', feed);
     
           if(newPost.imageUrl){ // post with images
+
             axios.post('/api/pstimg', fd)
             .then((res) => {
               console.log(res);
@@ -120,7 +135,7 @@ function NewPost({username,email,classes}) {
             .catch(err => console.log(err));
     
           } else { // post without images
-            axios.post('/api/pst', {timestamp:timestamp, description: newPost.description})
+            axios.post('/api/pst', {timestamp:timestamp, description: newPost.description, feed:'MAIN'})
             .then((res) => {
               console.log(res);
             })
@@ -133,6 +148,10 @@ function NewPost({username,email,classes}) {
         }
       };
 
+      const handleClickProfilePic = () => {
+        history.push(`/${username}`);
+      }
+
     return (
         <div className={classes.pst}>
             <div className={classes.addPost}>
@@ -140,8 +159,15 @@ function NewPost({username,email,classes}) {
                     style={{minWidth:0,paddingLeft:10,paddingRight:10,marginRight:10}}
                     tip='Profile picture' 
                     size='small'
+                    onClick={handleClickProfilePic}
                     >
-                    <AccountCircle style={{fontSize:34}}/>
+                      <div>
+                      {profilePic !== '' ? 
+                        <img src={profilePic} className={classes.circleImg} alt='profile picture' />
+                      : <img src={fallbackImg} className={classes.circleImg} alt='profile picture' /> }
+                      </div>
+                     
+                  
               </Button>
 
               <CssTextField
@@ -214,7 +240,8 @@ NewPost.propTypes = {
 
 const mapStateToProps = state => ({
     username: state.user.username,
-    email: state.user.email
+    email: state.user.email,
+    profilePic: state.user.profilePic
 });
 
 export default connect(mapStateToProps)(withStyles(styles)(NewPost));
