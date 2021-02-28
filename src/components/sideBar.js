@@ -12,8 +12,12 @@ import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import SearchIcon from '@material-ui/icons/Search';
 
 import {connect} from 'react-redux';
+import {setUserInfo} from  '../redux/user/userSlice';
 
 import CssTextField from '../util/cssTextField';
+import fallbackImg from '../resources/blank_4_5.png';
+
+import axios from 'axios';
 
 const styles = (theme) => ({
     ...theme.general,
@@ -24,6 +28,16 @@ const styles = (theme) => ({
         marginLeft:0,
         padding:10,
         border: '1px solid rgba(0,0,0,0.1)',   
+    },
+    circleImg:{
+        height:30,
+        width:30,
+        objectFit: 'cover',
+        borderRadius: '50%'
+    },
+    profilePicButton:{
+        padding:0,
+        marginRight:5
     },
     pstButtons:{
         display:'flex',
@@ -51,7 +65,35 @@ const styles = (theme) => ({
     }
 });
 
-const SideBar = ({username,email,classes}) => {
+const SideBar = ({username,email, profilePic, setUserInfo, classes}) => {
+
+    const handleClickImage = () => {
+        
+        const fileInput = document.getElementById('profilePicInput');
+        fileInput.click();
+    
+    };
+    const handleImageChange = (event) => {
+        const image = event.target.files[0];
+
+        const formData = new FormData();
+        formData.append('image', image, image.name);
+        console.log('formdata[image]:');
+        console.log(formData.get('image'));
+
+        const currentDate = new Date();
+        formData.append('timestamp', currentDate.getTime());
+
+        axios.post('/api/changeprofilepic', formData)
+            .then((res) => {
+              console.log(res.data);
+           
+              setUserInfo({username: username, email: email, profilePic: res.data.profilePic});
+            
+            })
+            .catch(err => console.log(err));
+    };
+
     return(
         <div style={{position:'fixed'}}>
         <div className={classes.pst}>
@@ -75,10 +117,14 @@ const SideBar = ({username,email,classes}) => {
                 />
         </div>
         <div className={classes.pst}>
-           
+                  
+            <input type='file' id='profilePicInput' onChange={handleImageChange} hidden='hidden'/>
             <div className={classes.usernameIcon}>
-                <IconButton aria-label="user photo" color="inherit" size='small' >
-                    <AccountCircle style={{fontSize:34}}/>
+                <IconButton aria-label="user photo" color="inherit" size='small' 
+                    className={classes.profilePicButton} onClick={handleClickImage}>
+                    {profilePic !== '' ? 
+                            <img src={profilePic} className={classes.circleImg} alt='profile picture' />
+                        : <img src={fallbackImg} className={classes.circleImg} alt='profile picture' /> }
                 </IconButton>
                 <div className={classes.usernameText}> <b> {username} </b> </div>
 
@@ -148,7 +194,10 @@ SideBar.propTypes = {
 
 const mapStateToProps = state => ({
     username: state.user.username,
-    email: state.user.email
+    email: state.user.email,
+    profilePic: state.user.profilePic
 });
 
-export default connect(mapStateToProps)(withStyles(styles)(SideBar));
+const mapActionsToProps = { setUserInfo };
+
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(SideBar));

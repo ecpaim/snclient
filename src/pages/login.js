@@ -15,7 +15,7 @@ import { useHistory } from "react-router-dom";
 import axios from 'axios';
 
 import {connect} from 'react-redux';
-import {setAuthentication} from    '../redux/user/userSlice';
+import {setAuthentication, setUserInfo} from    '../redux/user/userSlice';
 
 const styles = (theme) => ({ 
     ...theme.general,
@@ -26,9 +26,6 @@ const styles = (theme) => ({
         [theme.breakpoints.up('md')]: {
             border: '1px solid rgba(0,0,0,0.1)',
         }
-    },
-    page:{ // vh - appbar height
-        minHeight:'calc(100vh - 52px)'
     },
     title:{
         display:'flex',
@@ -44,7 +41,7 @@ const styles = (theme) => ({
     }
   });
 
-function Login({username, email, authenticated, setAuthentication, classes}){
+function Login({username, email, authenticated, setAuthentication, setUserInfo, classes}){
 
     const [loginInfo, setLoginInfo] = React.useState({username:'', wrongUser:false, errorUsername:'', password:'', wrongPass:false, errorPassword:''});
 
@@ -80,6 +77,13 @@ function Login({username, email, authenticated, setAuthentication, classes}){
                     axios.defaults.headers.common['Authorization'] = AuthToken;
                     const decodedToken = jwtDecode(AuthToken);
                     setAuthentication({user:decodedToken.sub, authBool: true});
+
+                    axios.get('/api/user')
+                        .then((res) => {
+                            console.log(res.data);
+                            setUserInfo({username: res.data.username, email: res.data.email, profilePic: res.data.profilePic});
+                        })
+                        .catch(err => console.log(err));
                     
                     history.push('/'); // redirects to HOME
 
@@ -116,7 +120,7 @@ function Login({username, email, authenticated, setAuthentication, classes}){
     };
 
     return(
-        <div className={classes.page}>
+        
         <Grid container className={classes.background} >
         <Grid item md={4} xs={false} />
         <Grid item md={3} xs={12} className={classes.page}>
@@ -179,7 +183,7 @@ function Login({username, email, authenticated, setAuthentication, classes}){
             </div>
         </Grid>
         </Grid>
-        </div>
+        
     );
 };
 
@@ -193,6 +197,6 @@ const mapStateToProps = state => ({
     authenticated: state.user.authenticated,
 });
 
-const mapActionsToProps = { setAuthentication };
+const mapActionsToProps = { setAuthentication, setUserInfo };
 
 export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Login));
