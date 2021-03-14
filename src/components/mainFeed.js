@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import withStyles from '@material-ui/core/styles/withStyles';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import ModeCommentOutlinedIcon from '@material-ui/icons/ModeCommentOutlined';
 import ShareOutlinedIcon from '@material-ui/icons/ShareOutlined';
@@ -10,6 +11,8 @@ import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Typography from '@material-ui/core/Typography';
 import FilterVintageIcon from '@material-ui/icons/FilterVintage';
+import Popover from '@material-ui/core/Popover';
+import Button from '@material-ui/core/Button';
 
 import blankPst from '../resources/blank_4_5.svg';
 
@@ -39,11 +42,6 @@ const styles = (theme) => ({
     },
     pstButtons:{
         display:'flex',
-        /*
-        width:'95%',
-        paddingLeft:'2.5%',
-        paddingRight:'2.5%'
-        */
        paddingLeft: 3,
        paddingRight: 3
     },
@@ -58,6 +56,24 @@ const styles = (theme) => ({
         }
     },
     favouriteIcon:{
+        fontSize: 28,
+        paddingLeft:1,
+        [theme.breakpoints.up('md')]: {
+            fontSize: 24,
+        },
+
+    },
+    favouriteIconVisible:{
+        color: '#cc0000', // red
+        fontSize: 28,
+        paddingLeft:1,
+        [theme.breakpoints.up('md')]: {
+            fontSize: 24,
+        },
+
+    },
+    favouriteIconHidden:{
+        color: theme.palette.secondary.main,
         fontSize: 28,
         paddingLeft:1,
         [theme.breakpoints.up('md')]: {
@@ -92,32 +108,110 @@ const styles = (theme) => ({
         paddingTop:10,
         paddingRight:10,
         color:'rgba(0,0,0,0.4)'
-    }
+    },
+    likeMenu:{
+        display:'flex'
+    },
+    likeOptions:{
+        paddingTop:6,
+        paddingBottom:6
+    },
 });
 
-//const posts = [1,2,3,4,5];
+let initialLikes = {};
+// axios.get('/api/likedposts')TODO
+
 const MINUTE = 600000;
 
-
 const MainFeed = ({username, authenticated, classes}) => {
+
     const [posts, setPosts] = React.useState([]);
+    const [anchors, setAnchors] = React.useState({});
+    const [likedPosts,setLikedPosts] = React.useState(initialLikes);
+
     React.useEffect(() => {
         const interval = setInterval(() => { console.log('10min')}, MINUTE);
         axios.get('/api/mainfeed')
             .then((res) => {
                 console.log(res.data);
-                setPosts(res.data);
+                let newAnchors = {};
+                for( const pst of res.data){
+                    newAnchors[pst.id] = {value: null, open: false};
+                }
+                console.log(newAnchors);
+                setAnchors(newAnchors);
+
+                setPosts(res.data); // refactor to call only if there are new posts
             })
             .catch(err => console.log(err));
 
         return () => clearInterval(interval); //return unmount function to prevent memory leaks
     }, []);
 
+    const handleClick = (event, id) => {
+        console.log(event);
+        console.log(id);
+        let newAnchors = {...anchors};
+        newAnchors[id] = {value:event.currentTarget, open: Boolean(event.currentTarget)};
+        setAnchors(newAnchors);
+    };
+
+    const handleClose = (id) => {
+        let newAnchors = {...anchors};
+        newAnchors[id] = {value:null, open: Boolean(null)};
+        setAnchors(newAnchors);
+    }
+
+    const handleLike = (id, type, pstOwner) => {
+
+        let newLikedPosts = {...likedPosts};
+        newLikedPosts[id] = type;
+        setLikedPosts(newLikedPosts);
+
+        let newAnchors = {...anchors};
+        newAnchors[id] = {value:null, open: Boolean(null)};
+        setAnchors(newAnchors);
+
+        const currentDate = new Date();
+        
+        const newLike = {
+            type: 'LIKE',
+            hidden: type === 'visible' ? false : true,
+            timestamp: currentDate.getTime(),
+            id: id,
+            username: pstOwner
+        };
+
+        axios.post('/api/reactpost', newLike)
+            .then((res) => {    
+                console.log(res);
+                
+                let newPosts = posts.map( pst => {
+                    if(pst.id === id){
+                        pst.nLikes = pst.nLikes + 1;
+                    }
+                    return pst;
+                });
+                setPosts(newPosts);
+
+            }).catch( err => {
+                console.log(err);
+                let newLikedPosts = {...likedPosts};
+                newLikedPosts[id] = undefined;
+                setLikedPosts(newLikedPosts);
+                // maybe show an error message?
+            });
+
+
+        return;
+    }
+
     return(
         <div>
             {
                 posts ? posts.map( pst => (
                     <div className={classes.pst} key={pst.id}>
+
                         <div className={classes.pstButtons}>
                             <IconButton aria-label="user photo" color="inherit" size='small' >
                                     <AccountCircle className={classes.pstUser} />
@@ -138,14 +232,50 @@ const MainFeed = ({username, authenticated, classes}) => {
 
                         <div className={classes.pstButtons}>
                             <Typography variant='body2' className={classes.pstButtonsText}> {pst.nLikes} </Typography>
-                            <IconButton aria-label="like post" color="inherit" size='small'>
-                                <FavoriteBorderIcon className={classes.favouriteIcon}/> 
+                            <IconButton aria-describedby={pst.id} aria-label="like post" color="inherit" size='small' onClick={(e) => handleClick(e,pst.id)}>
+                                { likedPosts[pst.id] === undefined ? 
+                                    <FavoriteBorderIcon className={classes.favouriteIcon}/>
+                                    : likedPosts[pst.id] === 'hidden' ?
+                                        <FavoriteIcon  className={classes.favouriteIconHidden}/>
+                                        : <FavoriteIcon  className={classes.favouriteIconVisible}/>
+                                }
                             </IconButton>
+                            <Popover id={pst.id} open={anchors[pst.id].open} anchorEl={anchors[pst.id].value} onClose={() => handleClose(pst.id)}
+                                elevation={1}
+                                anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'center',
+                                }}
+                                transformOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'center',
+                                }}
+                            >
+                                <div className={classes.likeMenu}>
+                                <Button 
+                                    className={classes.likeOptions}
+                                    size='small'  
+                                    onClick={() => handleLike(pst.id, 'visible', pst.username)} 
+                                    >
+                                    <FavoriteIcon  className={classes.favouriteIconVisible}/>
+                                </Button>
+                                <Button 
+                                    className={classes.likeOptions}
+                                    size='small' 
+                                    onClick={() => handleLike(pst.id, 'hidden', pst.username)}  
+                                    >
+                                    <FavoriteIcon  className={classes.favouriteIconHidden}/>
+                                </Button>
+                                </div>
+                            </Popover>
+
+
                             <Typography style={{margin:4}}/>
                             <Typography variant='body2' className={classes.pstButtonsText}> {pst.nComments} </Typography>
                             <IconButton aria-label="comment on post" color="inherit" size='small' >
                                 <ModeCommentOutlinedIcon className={classes.pstIcons}/>
                             </IconButton>
+
                             <Typography style={{margin:4}}/>
                             <Typography variant='body2' className={classes.pstButtonsText}> {pst.nGifts} </Typography>
                             <IconButton aria-label="give a present" color="inherit" size='small' >

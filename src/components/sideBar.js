@@ -179,8 +179,6 @@ const SideBar = ({username,email, profilePic, setUserInfo, classes}) => {
                 <Typography className={classes.buttonsText} variant='body2'> Configurações </Typography>
 
                 <div className={classes.grow} />
-
-            
                 
             </div>
         </div>
