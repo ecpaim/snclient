@@ -10,18 +10,28 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import PropTypes from 'prop-types';
 import { Toolbar, AppBar } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
+import ToggleButton from '@material-ui/lab/ToggleButton';
 import Badge from '@material-ui/core/Badge';
 import MailIcon from '@material-ui/icons/Mail';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import Slide from '@material-ui/core/Slide';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Popper from '@material-ui/core/Popper';
+import Grow from '@material-ui/core/Grow';
+import Paper from '@material-ui/core/Paper';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
 
 import {connect} from 'react-redux';
 
 import {Link as RouterLink} from "react-router-dom";
+
+import axios from 'axios';
 
 
 const styles = (theme) => ({ 
@@ -62,6 +72,7 @@ const styles = (theme) => ({
         padding: 8
     },
     inactiveIcon:{
+        color:'rgba(0,0,0,0.4)',
         fontSize: 20
     },
     activeIcon:{ // sets brigther version of secondary color
@@ -81,6 +92,33 @@ const styles = (theme) => ({
           display: 'none',
         },
     },
+    Buttons: { 
+        border:0,
+        margin:5,
+        marginRight:0,
+        minWidth:42 // overrides default width of 64px
+    },
+    popoverItens:{
+        textTransform:'none',
+        padding:8,
+        paddingRight:12,
+        paddingLeft:12,
+        marginRight:7,
+        marginLeft:7
+    },
+    notificationMessageIcon: {
+        color: '#cc0000', // red
+        paddingLeft: 10,
+        fontSize: 16
+    },
+    notificationMessageIconHidden: {
+        color: theme.palette.secondary.main, // purple
+        paddingLeft: 10,
+        fontSize: 16
+    },
+    popoverOffset: {
+        marginTop:10
+    }
 });
 
 function HideOnScroll(props) {
@@ -104,7 +142,62 @@ HideOnScroll.propTypes = {
     children: PropTypes.element.isRequired,
 };
 
+const MINUTE = 600000;
+
 const MainAppBar = ({profilePic, classes}) => {
+
+    const [anchorEl, setAnchorEl] = React.useState({ notif: null, messages: null });
+    const [notifications, setNotifications] = React.useState([]);
+    const [newNotif, setNewNotif] = React.useState(0);
+    const [newMessages, setNewMessages] = React.useState(0);
+    const notif = Boolean(anchorEl.notif);
+
+    const messages = Boolean(anchorEl.messages);
+
+    React.useEffect(() => {
+        const interval = setInterval(() => { console.log('10min')}, MINUTE);
+        axios.get('/api/notif')
+            .then((res) => {
+                console.log(res.data);
+                let newNotifications = 0;
+                res.data.forEach((notif) => { if(!notif.read) {newNotifications++;} return; });
+                setNotifications(res.data);
+                setNewNotif(newNotifications);
+            })
+            .catch(err => console.log(err));
+
+        return () => clearInterval(interval); //return unmount function to prevent memory leaks
+    }, []);
+
+    const handleClick = (event, id) => {
+        let newAnchors = {...anchorEl};
+        if( id === 'notif'){
+            if(newAnchors.notif){
+                newAnchors.notif = null;
+            } else {
+                newAnchors.notif = event.currentTarget;
+                notifications.forEach((notif) => { 
+                    if(notif.read === false){
+                        axios.post('/api/readNotif', {id: notif.id})
+                        .then( res => {console.log(res); setNewNotif(0);})
+                        .catch(err => console.log(err)) 
+                    }
+                    return;
+                });
+            }
+        }
+        else{
+            newAnchors.messages ? newAnchors.messages = null : newAnchors.messages = event.currentTarget
+        }
+        setAnchorEl(newAnchors);
+    };
+    
+    const handleClose = (id) => {
+        let newAnchors = {...anchorEl};
+        id === 'notif' ? newAnchors.notif = null : newAnchors.messages = null;
+        setAnchorEl(newAnchors);
+    };
+
     return(
         <div>
             <HideOnScroll {...classes}>
@@ -121,16 +214,28 @@ const MainAppBar = ({profilePic, classes}) => {
                     <div className={classes.grow} />
 
                     <div className={classes.sectionMobile}>
-                    <IconButton aria-label="show notifications" color="inherit" size='small' className={classes.MobileIconButton}>
-                        <Badge badgeContent={4} classes={{badge: classes.badge}} >
-                            <NotificationsIcon className={classes.activeIcon} />
-                        </Badge>
+                    <IconButton aria-label="show notifications" color="inherit" size='small' className={classes.MobileIconButton} onClick = {(e) => handleClick(e, 'notif')}>
+                        {newNotif === 0 ? 
+                            <Badge badgeContent={0} classes={{badge: classes.badge}} >
+                                <NotificationsIcon className={classes.inactiveIcon} />
+                            </Badge>
+                            : 
+                            <Badge badgeContent={newNotif} classes={{badge: classes.badge}} >
+                                <NotificationsIcon className={classes.activeIcon} />
+                            </Badge>
+                        }
                     </IconButton>
 
                     <IconButton aria-label="show messages" color="inherit" size='small' className={classes.MobileIconButton}>
-                        <Badge badgeContent={1} classes={{badge: classes.badge}} >
-                            <MailIcon className={classes.activeIcon}/>
-                        </Badge>
+                        { newMessages === 0 ?
+                            <Badge badgeContent={0} classes={{badge: classes.badge}} >
+                                <MailIcon className={classes.inactiveIcon}/>
+                            </Badge>
+                            :
+                            <Badge badgeContent={newMessages} classes={{badge: classes.badge}} >
+                                <MailIcon className={classes.activeIcon}/>
+                            </Badge>
+                        }
                     </IconButton>
 
                     <IconButton aria-label="show profile and configurations" color="inherit" size='small' className={classes.MobileIconButton}>
@@ -141,23 +246,76 @@ const MainAppBar = ({profilePic, classes}) => {
                     </div>
 
                     <div className={classes.sectionDesktop}>
-                    <IconButton aria-label="show notifications" color="inherit" >
-                        <Badge badgeContent={4} classes={{badge: classes.badge}} >
+                  
+                    <ToggleButton selected={notif} disableRipple className={classes.Buttons} aria-label="show notifications" size='small' onClick = {(e) => handleClick(e, 'notif')} >
+                        {newNotif === 0 ? 
+                        <Badge badgeContent={0} classes={{badge: classes.badge}} >
+                            <NotificationsIcon className={classes.inactiveIcon} />
+                        </Badge>
+                        : 
+                        <Badge badgeContent={newNotif} classes={{badge: classes.badge}} >
                             <NotificationsIcon className={classes.activeIcon} />
                         </Badge>
-                    </IconButton>
+                        }
+                    </ToggleButton>
+                    
 
-                    <IconButton aria-label="show messages" color="inherit" >
-                        <Badge badgeContent={1} classes={{badge: classes.badge}} >
-                            <MailIcon className={classes.activeIcon} />
-                        </Badge>
-                    </IconButton>
+                    <Popper open={notif} anchorEl={anchorEl.notif} role={undefined} transition disablePortal>
+                        {({ TransitionProps, placement }) => (
+                            <Grow
+                            {...TransitionProps}
+                            style={{ transformOrigin: placement === 'bottom' ? 'right top' : 'right bottom' }}
+                            >
+                            <Paper className={classes.popoverOffset}>
+                               
+                                <MenuList  id="menu-list-grow" >
+                                    {notifications.length > 0 ? notifications.map( (n) => {
+                                        if( n.type === 'LIKE' && n.hidden === false){
+                                            return (<div>
+                                                <MenuItem disableRipple className={classes.popoverItens} size='small' > 
+                                                    <Typography variant='body2'>   <b>{n.from}</b> reagiu ao seu post </Typography> 
+                                                    <div className={classes.grow} />
+                                                       <FavoriteIcon className={classes.notificationMessageIcon}/>
+                                                </MenuItem>
+                                            </div>);
+                                        } else if( n.type === 'LIKE' && n.hidden === true) {
+                                            return (<div>
+                                                <MenuItem disableRipple className={classes.popoverItens} size='small' > 
+                                                    <Typography variant='body2'>alguém reagiu ao seu post </Typography> 
+                                                    <div className={classes.grow} />
+                                                    <FavoriteIcon className={classes.notificationMessageIconHidden} />
+                                                </MenuItem>
+                                            </div>);
+                                        }
+                                        
+                                    }) 
+                                        : <MenuItem disableRipple className={classes.popoverItens} size='small' > 
+                                            <Typography variant='body2'>não há notificações novas! </Typography> 
+                                            </MenuItem>}
+                                </MenuList>
+                                
+                            </Paper>
+                            </Grow>
+                        )}
+                    </Popper>
 
-                    <IconButton aria-label="show profile" color="inherit" >
+                    <Button disableRipple className={classes.Buttons} aria-label="show messages" size='small' color="inherit" >
+                        { newMessages === 0 ?
+                            <Badge badgeContent={0} classes={{badge: classes.badge}} >
+                                <MailIcon className={classes.inactiveIcon}/>
+                            </Badge>
+                            :
+                            <Badge badgeContent={newMessages} classes={{badge: classes.badge}} >
+                                <MailIcon className={classes.activeIcon}/>
+                            </Badge>
+                        }
+                    </Button>
+
+                    <Button disableRipple className={classes.Buttons} aria-label="show profile" size='small' color="inherit" >
                         {profilePic !== '' ? 
                                 <img src={profilePic} className={classes.circleImg} alt='profile picture' />
                             : <img src={fallbackImg} className={classes.circleImg} alt='profile picture' /> }   
-                    </IconButton>
+                    </Button>
                     </div>
                 </Toolbar>
             </AppBar>

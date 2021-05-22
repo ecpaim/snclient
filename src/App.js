@@ -6,6 +6,7 @@ import MainAppBar from './components/mainAppBar';
 import Home from './pages/home';
 import Login from './pages/login';
 import Signup from './pages/signup';
+import PostPage from './pages/postpage';
 import ProtectedRoute from './components/protectedRoute';
 import AuthRoute from './components/authRoute';
 
@@ -39,6 +40,7 @@ const App =  (props) => {
         <Route exact path='/' component={Home} />
         <AuthRoute exact path='/login' component={Login} />
         <Route exact path='/signup' component={Signup} />
+        <Route exact path='/pst/:userid/:timeid' component={PostPage} />
       </RouterSwitch>
     </div>
   );

@@ -10,7 +10,9 @@ const userSlice = createSlice({
       username: 'username',
       email: 'example@email.com',
       profilePic:'',
-      authenticated: false
+      authenticated: false,
+      likes: {},
+      currentPost: {}
   },
   reducers: {
     changeEmail: {
@@ -32,8 +34,26 @@ const userSlice = createSlice({
       state.username = username;
       state.email = email;
       state.profilePic = profilePic;
+    },
+    setLikes(state,action){
+      const { likes } = action.payload;
+      let newLikes = {};
+      likes.forEach( like => newLikes[like.SKEY] = like.hidden ? 'hidden' : 'visible');
+      state.likes = newLikes;
+    },
+    addLike(state,action){
+      const { like } = action.payload;
+      state.likes[like.id] = like.type;
+    },
+    removeLike(state,action){
+      const { id } = action.payload;
+      state.likes[id] = undefined;
+    },
+    addCurrentPost(state,action){
+      const {pst} = action.payload;
+      state.currentPost = {...pst};
     }
   }
 })
-export const { changeEmail, setAuthentication, setUserInfo } = userSlice.actions;
+export const { changeEmail, setAuthentication, setUserInfo, setLikes, addLike, removeLike, addCurrentPost } = userSlice.actions;
 export default userSlice.reducer;

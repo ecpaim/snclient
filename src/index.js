@@ -15,7 +15,7 @@ import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from './redux/root';
-import {setAuthentication, setUserInfo} from  './redux/user/userSlice';
+import {setAuthentication, setUserInfo, setLikes} from  './redux/user/userSlice';
 
 const theme = createMuiTheme(themeFile);
 
@@ -44,6 +44,7 @@ if(token){
       .then((res) => {
           console.log(res.data);
           store.dispatch(setUserInfo({username: res.data.username, email: res.data.email, profilePic: res.data.profilePic}));
+          store.dispatch(setLikes({likes: res.data.likes }));
         })
     .catch(err => console.log(err));
   }

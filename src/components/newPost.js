@@ -125,6 +125,8 @@ function NewPost({username,email,profilePic,classes}) {
 
           const feed = 'MAIN';
           fd.append('feed', feed);
+
+          fd.append('profilepic', profilePic);
     
           if(newPost.imageUrl){ // post with images
 
@@ -135,7 +137,7 @@ function NewPost({username,email,profilePic,classes}) {
             .catch(err => console.log(err));
     
           } else { // post without images
-            axios.post('/api/pst', {timestamp:timestamp, description: newPost.description, feed:'MAIN'})
+            axios.post('/api/pst', {timestamp:timestamp, profilepic: profilePic, description: newPost.description, feed:'MAIN'})
             .then((res) => {
               console.log(res);
             })
@@ -163,8 +165,8 @@ function NewPost({username,email,profilePic,classes}) {
                     >
                       <div>
                       {profilePic !== '' ? 
-                        <img src={profilePic} className={classes.circleImg} alt='profile picture' />
-                      : <img src={fallbackImg} className={classes.circleImg} alt='profile picture' /> }
+                        <img src={profilePic} className={classes.circleImg} alt='profile' />
+                      : <img src={fallbackImg} className={classes.circleImg} alt='profile' /> }
                       </div>
                      
                   
