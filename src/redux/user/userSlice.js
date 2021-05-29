@@ -38,7 +38,7 @@ const userSlice = createSlice({
     setLikes(state,action){
       const { likes } = action.payload;
       let newLikes = {};
-      likes.forEach( like => newLikes[like.SKEY] = like.hidden ? 'hidden' : 'visible');
+      likes.forEach( like => newLikes[like.id] = like.hidden ? 'hidden' : 'visible');
       state.likes = newLikes;
     },
     addLike(state,action){
@@ -50,10 +50,14 @@ const userSlice = createSlice({
       state.likes[id] = undefined;
     },
     addCurrentPost(state,action){
-      const {pst} = action.payload;
-      state.currentPost = {...pst};
+      const {pst, comments, likes} = action.payload;
+      state.currentPost = {...pst, comments: comments, likes: likes};
+    },
+    addComment(state,action){
+      const comment = action.payload;
+      state.currentPost.comments.push(comment);
     }
   }
 })
-export const { changeEmail, setAuthentication, setUserInfo, setLikes, addLike, removeLike, addCurrentPost } = userSlice.actions;
+export const { changeEmail, setAuthentication, setUserInfo, setLikes, addLike, removeLike, addCurrentPost, addComment } = userSlice.actions;
 export default userSlice.reducer;

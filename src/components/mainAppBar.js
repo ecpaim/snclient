@@ -15,6 +15,7 @@ import Badge from '@material-ui/core/Badge';
 import MailIcon from '@material-ui/icons/Mail';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import ModeCommentOutlinedIcon from '@material-ui/icons/ModeCommentOutlined';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import Slide from '@material-ui/core/Slide';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -105,6 +106,10 @@ const styles = (theme) => ({
         paddingLeft:12,
         marginRight:7,
         marginLeft:7
+    },
+    commentMessageIcon:{
+        paddingLeft: 10,
+        fontSize: 16
     },
     notificationMessageIcon: {
         color: '#cc0000', // red
@@ -286,7 +291,23 @@ const MainAppBar = ({profilePic, classes}) => {
                                                     <FavoriteIcon className={classes.notificationMessageIconHidden} />
                                                 </MenuItem>
                                             </div>);
-                                        }
+                                        } else if( n.type === 'COMMENT' && n.hidden === false) {
+                                            return (<div>
+                                                <MenuItem disableRipple className={classes.popoverItens} size='small' > 
+                                                    <Typography variant='body2'><b>{n.from}</b> comentou em seu post </Typography> 
+                                                    <div className={classes.grow} />
+                                                    <ModeCommentOutlinedIcon className={classes.commentMessageIcon} />
+                                                </MenuItem>
+                                            </div>);
+                                        } else if( n.type === 'COMMENT' && n.hidden === true) {
+                                            return (<div>
+                                                <MenuItem disableRipple className={classes.popoverItens} size='small' > 
+                                                    <Typography variant='body2'>alguém comentou seu post </Typography> 
+                                                    <div className={classes.grow} />
+                                                    <ModeCommentOutlinedIcon className={classes.commentMessageIcon} />
+                                                </MenuItem>
+                                            </div>);
+                                        } 
                                         
                                     }) 
                                         : <MenuItem disableRipple className={classes.popoverItens} size='small' > 

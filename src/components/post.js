@@ -24,6 +24,7 @@ const styles = (theme) => ({
     ...theme.general,
     pst:{
         backgroundColor:'#ffffff',
+        color: '#000000', // black
         margin:6,
         [theme.breakpoints.up('md')]: {
             padding:10,

@@ -3,6 +3,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import withStyles from '@material-ui/core/styles/withStyles';
+import Link from '@material-ui/core/Link';
+import {Link as RouterLink} from "react-router-dom";
 
 import Post from './post';
 
@@ -49,7 +51,11 @@ const MainFeed = ({username, authenticated, likes, classes}) => {
         <div>
             {
                 posts ? posts.map( pst => (
-                    <Post key={pst.id} post={pst}/>   
+                    <div key={pst.id}>
+                    <Link component={RouterLink} to={pst.id}>
+                        <Post  post={pst}/> 
+                    </Link>  
+                    </div>
                 ))
                 : null
             }
