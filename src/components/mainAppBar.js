@@ -45,6 +45,7 @@ const styles = (theme) => ({
           },
     },
     circleImg:{
+        fontSize:10,
         height:25,
         width:25,
         objectFit: 'cover',
@@ -173,6 +174,7 @@ const MainAppBar = ({profilePic, classes}) => {
 
         return () => clearInterval(interval); //return unmount function to prevent memory leaks
     }, []);
+
 
     const handleClick = (event, id) => {
         let newAnchors = {...anchorEl};

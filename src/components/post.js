@@ -107,6 +107,7 @@ const styles = (theme) => ({
         marginBottom:8,
     },
     circleImg:{
+        fontSize:10,
         height:38,
         width:38,
         objectFit: 'cover',

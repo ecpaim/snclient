@@ -7,6 +7,7 @@ import Home from './pages/home';
 import Login from './pages/login';
 import Signup from './pages/signup';
 import PostPage from './pages/postpage';
+import Messages from './pages/messages';
 import ProtectedRoute from './components/protectedRoute';
 import AuthRoute from './components/authRoute';
 
@@ -41,6 +42,7 @@ const App =  (props) => {
         <AuthRoute exact path='/login' component={Login} />
         <Route exact path='/signup' component={Signup} />
         <Route exact path='/pst/:userid/:timeid' component={PostPage} />
+        <Route exact path='/msg/:userid' component={Messages} />
       </RouterSwitch>
     </div>
   );

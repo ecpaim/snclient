@@ -14,7 +14,7 @@ import loadingCat from '../resources/loadingIcon.svg';
 import fallbackImg from '../resources/blank_4_5.png';
 
 import {connect} from 'react-redux';
-import { addComment } from  '../redux/user/userSlice';
+import { addMessages } from  '../redux/user/userSlice';
 
 import { useHistory } from "react-router-dom";
 
@@ -24,6 +24,7 @@ const styles = (theme) => ({
         backgroundColor:'#ffffff',
         margin:6,
         padding:10,
+        height:90,
         [theme.breakpoints.up('md')]: {
             border: '1px solid rgba(0,0,0,0.1)',
         }
@@ -33,7 +34,6 @@ const styles = (theme) => ({
         
     },
     circleImg:{
-      fontSize:10,
       height:40,
       width:40,
       objectFit: 'cover',
@@ -71,43 +71,33 @@ const styles = (theme) => ({
 });
 
 
-function NewComment({username,email,profilePic,classes, postId, addComment}) {
+function NewMessage({username,email,profilePic,classes, addMessages, receiver}) {
 
-    const [newComment, setnewComment] = React.useState({description:"", visibility:"visível"});
+    const [newMessage, setNewMessage] = React.useState({description:"", visibility:"visível"});
 
     const history = useHistory();
 
-    
-    
       const handleWriteDescription = (event) => { 
-        console.log(newComment);
-        setnewComment({
-          ...newComment,
+        console.log(newMessage);
+        setNewMessage({
+          ...newMessage,
           description: event.target.value
         });
       }
-      const handleClickVisibility = () => {
-        if(newComment.visibility === 'visível'){
-            setnewComment({ ...newComment, visibility:"anônimo"});
-        } else {
-            setnewComment({ ...newComment, visibility:"visível"});
-        }
-      };
-      
+
       const handleClickPost = () => {
-        if(newComment.description){
+        if(newMessage.description){
             let hidden = true;
-            if(newComment.visibility == 'visível'){
+            if(newMessage.visibility == 'visível'){
                 hidden = false;
             }
 
             const currentDate = new Date();
             const timestamp = currentDate.getTime();
         
-            axios.post('/api/cmmt', {timestamp:timestamp, comment: newComment.description, post: postId, profilepic: profilePic, hidden: hidden})
+            axios.post('/api/mess', {timestamp:timestamp, text: newMessage.description, profilePic: profilePic, from: username, to: receiver})
             .then((res) => {
-                setnewComment({ ...newComment, description: ""});
-                addComment({ timestamp: timestamp, comment: newComment.description, profilePic: profilePic, hidden: hidden, username: username });
+                setNewMessage({ ...newMessage, description: ""});
                 console.log(res);
             })
             .catch(err => console.log(err));
@@ -122,7 +112,7 @@ function NewComment({username,email,profilePic,classes, postId, addComment}) {
       }
 
     return (
-        <div >
+        <div className={classes.pst} >
             <div className={classes.addPost}>
              <Button 
                     style={{minWidth:0,paddingLeft:10,paddingRight:10,marginRight:10}}
@@ -142,13 +132,13 @@ function NewComment({username,email,profilePic,classes, postId, addComment}) {
               <CssTextField
                   className = {classes.textField}
                   onChange={handleWriteDescription}
-                  value = {newComment.description}
+                  value = {newMessage.description}
                   id='comment'
                   placeholder='Escreva alguma coisa...'
                   fullWidth
                   multiline
                   rows={2}
-                  rowsMax={4}
+                  rowsMax={2}
                   variant='outlined'
                   size='small'
                   InputProps={{ 
@@ -158,31 +148,10 @@ function NewComment({username,email,profilePic,classes, postId, addComment}) {
                     }}
                   />
               <div>
-                    <div>
-                      <input type='file' id='imageInput' hidden='hidden'/>
-                      <Button 
-                        className={classes.postOptions}
-                        size='small'
-                        tip='Add Image' 
-                        >
-                          <ImageIcon color='secondary' style={{fontSize:20}} />
-                      </Button>
-                    </div>
-
-                    <div>
-                      <Button 
-                        className={classes.postOptions}
-                        size='small'
-                        tip='Change visibility' 
-                        onClick={handleClickVisibility}
-                        >
-                          <LockIcon color='secondary' style={{fontSize:20}}/>
-                      </Button>
-                    </div>
               </div>
             </div>
             <div className={classes.addPost}>
-            <div className={classes.postFeed}>  Postar comentário como: {newComment.visibility} </div>
+            <div className={classes.postFeed}>  Enviar mensagem para {receiver} </div>
               <div className={classes.grow} />
                   <Button 
                       className={classes.postButton}
@@ -190,7 +159,7 @@ function NewComment({username,email,profilePic,classes, postId, addComment}) {
                       size='small'
                       onClick={handleClickPost}
                       >
-                        COMMENT
+                        SEND
                   </Button>
             </div>
             <img src={loadingCat} style={{width:'50%'}} alt='loading'hidden='hidden'/>    
@@ -198,7 +167,7 @@ function NewComment({username,email,profilePic,classes, postId, addComment}) {
     );
 }
 
-NewComment.propTypes = {
+NewMessage.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
@@ -208,6 +177,6 @@ const mapStateToProps = state => ({
     profilePic: state.user.profilePic
 });
 
-const mapActionsToProps = { addComment };
+const mapActionsToProps = { addMessages };
 
-export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(NewComment));
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(NewMessage));

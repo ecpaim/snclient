@@ -46,6 +46,7 @@ const styles = (theme) => ({
         paddingRight: 3,
     },
     circleImg:{
+        fontSize:10,
         height:38,
         width:38,
         objectFit: 'cover',

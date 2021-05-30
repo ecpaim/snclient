@@ -12,7 +12,8 @@ const userSlice = createSlice({
       profilePic:'',
       authenticated: false,
       likes: {},
-      currentPost: {}
+      currentPost: {},
+      currentChat: []
   },
   reducers: {
     changeEmail: {
@@ -56,8 +57,15 @@ const userSlice = createSlice({
     addComment(state,action){
       const comment = action.payload;
       state.currentPost.comments.push(comment);
+    },
+    setCurrentChat(state,action){
+      state.currentChat = action.payload;
+    },
+    addMessages(state,action){
+      const messages = action.payload;
+      state.currentChat.push.apply( state.currentChat, messages);
     }
   }
 })
-export const { changeEmail, setAuthentication, setUserInfo, setLikes, addLike, removeLike, addCurrentPost, addComment } = userSlice.actions;
+export const { changeEmail, setAuthentication, setUserInfo, setLikes, addLike, removeLike, addCurrentPost, addComment, setCurrentChat, addMessages } = userSlice.actions;
 export default userSlice.reducer;
